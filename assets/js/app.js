@@ -4,6 +4,7 @@
   const DATA_URL = "assets/data/app_cards_full_values.tsv";
   const IMAGE_BASE = "assets/images/";
   const FAVORITE_KEY = "lessonCardViewer.favoriteCardIds";
+  const NEEDED_CARD_KEY = "lessonCardViewer.neededCardId";
   const MEMO_KEY = "lessonCardViewer.memo";
   const MAX_FAVORITES = 5;
   const SUGGESTED_TAGS = [
@@ -160,6 +161,7 @@
     problemSuggestions: document.getElementById("problemSuggestions"),
     tagSuggestions: document.getElementById("tagSuggestions"),
     searchResults: document.getElementById("searchResults"),
+    neededCardTray: document.getElementById("neededCardTray"),
     favoriteTray: document.getElementById("favoriteTray"),
     clearFavorites: document.getElementById("clearFavorites"),
     memoInput: document.getElementById("memoInput"),
@@ -298,6 +300,7 @@
     renderProblemSuggestions(route);
     renderTagSuggestions(route);
     renderSearch();
+    renderNeededCard();
     renderFavorites();
   }
 
@@ -315,6 +318,9 @@
 
   function renderTop() {
     setHeader("トップ画面", "マンダラシートです。周囲にある８枚のカードをクリックしてください");
+    const wrapper = document.createElement("div");
+    wrapper.className = "top-view";
+    wrapper.appendChild(topSteps());
     const grid = createGrid();
 
     TOP_LAYOUT.forEach((imageId) => {
@@ -332,7 +338,8 @@
       grid.appendChild(cell);
     });
 
-    replaceView(grid);
+    wrapper.appendChild(grid);
+    replaceView(wrapper);
   }
 
   function renderCategory(categoryId) {
@@ -421,12 +428,39 @@
     favButton.className = "primary-button";
     favButton.type = "button";
     favButton.addEventListener("click", () => addFavorite(card.id));
-    actions.append(backLink, favButton);
+    const neededButton = document.createElement("button");
+    neededButton.id = "neededCardToggle";
+    neededButton.className = "needed-button";
+    neededButton.type = "button";
+    neededButton.addEventListener("click", () => setNeededCard(card.id));
+    actions.append(backLink, favButton, neededButton);
 
-    detail.append(info, detailTags(card), actions);
+    detail.append(info, detailTags(card), actions, relatedCards(card));
     layout.append(imageBox, detail);
     replaceView(layout);
     updateFavoriteButton();
+    updateNeededButton();
+  }
+
+  function topSteps() {
+    const steps = document.createElement("section");
+    steps.className = "top-steps";
+    [
+      ["1", "困りごとを選ぶ"],
+      ["2", "気になるカードを保存する"],
+      ["3", "今の私に必要な１枚を決める"]
+    ].forEach(([number, text]) => {
+      const item = document.createElement("div");
+      item.className = "top-step";
+      const badge = document.createElement("span");
+      badge.className = "top-step-number";
+      badge.textContent = number;
+      const label = document.createElement("span");
+      label.textContent = text;
+      item.append(badge, label);
+      steps.appendChild(item);
+    });
+    return steps;
   }
 
   function createGrid() {
@@ -505,6 +539,56 @@
 
     section.append(title, list);
     return section;
+  }
+
+  function relatedCards(card) {
+    const related = getRelatedCards(card);
+    const section = document.createElement("section");
+    section.className = "related-cards";
+    const title = document.createElement("h3");
+    title.textContent = "このカードと一緒に見るカード";
+    section.appendChild(title);
+
+    if (related.length === 0) {
+      section.appendChild(emptyState("関連するカードはまだありません。"));
+      return section;
+    }
+
+    const list = document.createElement("div");
+    list.className = "related-card-list";
+    related.forEach((relatedCard) => {
+      const link = document.createElement("a");
+      link.className = "related-card";
+      link.href = `#card=${encodeURIComponent(relatedCard.id)}`;
+      link.append(
+        textSpan("related-card-number", `${relatedCard.cardNumber}　${relatedCard.categoryName}`),
+        textSpan("related-card-title", relatedCard.cardName),
+        textSpan("related-card-question", `問い：${relatedCard.question}`)
+      );
+      list.appendChild(link);
+    });
+    section.appendChild(list);
+    return section;
+  }
+
+  function getRelatedCards(card) {
+    const currentTags = new Set(getTagsForCard(card));
+    const currentProblems = state.problemPhrases.filter((problem) => problem.cardIds.includes(card.id));
+    return state.normalCards
+      .filter((candidate) => candidate.id !== card.id)
+      .map((candidate) => {
+        const tagScore = getTagsForCard(candidate).filter((tag) => currentTags.has(tag)).length;
+        const problemScore = currentProblems.filter((problem) => problem.cardIds.includes(candidate.id)).length * 2;
+        const categoryScore = candidate.categoryId === card.categoryId ? 1 : 0;
+        return {
+          card: candidate,
+          score: tagScore + problemScore + categoryScore
+        };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score || Number(a.card.sortOrder) - Number(b.card.sortOrder))
+      .slice(0, 3)
+      .map((item) => item.card);
   }
 
   function renderSearch() {
@@ -756,6 +840,48 @@
     });
   }
 
+  function renderNeededCard() {
+    const id = sessionStorage.getItem(NEEDED_CARD_KEY);
+    const card = id ? state.byId.get(id) : null;
+    els.neededCardTray.replaceChildren();
+
+    if (!card) {
+      return;
+    }
+
+    const item = document.createElement("div");
+    item.className = "needed-card";
+    const label = document.createElement("span");
+    label.className = "needed-card-label";
+    label.textContent = "今の私に必要な１枚";
+    const link = document.createElement("a");
+    link.className = "needed-card-link";
+    link.href = `#card=${encodeURIComponent(card.id)}`;
+    link.append(
+      textSpan("needed-card-title", `${card.cardNumber} ${card.cardName}`),
+      textSpan("needed-card-question", `問い：${card.question}`)
+    );
+    const clear = document.createElement("button");
+    clear.className = "remove-button";
+    clear.type = "button";
+    clear.textContent = "解除";
+    clear.addEventListener("click", clearNeededCard);
+    item.append(label, link, clear);
+    els.neededCardTray.appendChild(item);
+  }
+
+  function setNeededCard(id) {
+    sessionStorage.setItem(NEEDED_CARD_KEY, id);
+    renderNeededCard();
+    updateNeededButton();
+  }
+
+  function clearNeededCard() {
+    sessionStorage.removeItem(NEEDED_CARD_KEY);
+    renderNeededCard();
+    updateNeededButton();
+  }
+
   function addFavorite(id) {
     const ids = getFavoriteIds();
     if (ids.includes(id) || ids.length >= MAX_FAVORITES) {
@@ -803,6 +929,18 @@
     const isFull = ids.length >= MAX_FAVORITES;
     button.textContent = alreadySaved ? "保存済み" : isFull ? "5枚まで保存済み" : "気になるカードに保存";
     button.disabled = alreadySaved || isFull;
+  }
+
+  function updateNeededButton() {
+    const button = document.getElementById("neededCardToggle");
+    if (!button) {
+      return;
+    }
+    const route = getRoute();
+    const selectedId = sessionStorage.getItem(NEEDED_CARD_KEY);
+    const selected = selectedId === route.value;
+    button.textContent = selected ? "今の私に必要な１枚です" : "今の私に必要な１枚にする";
+    button.disabled = selected;
   }
 
   function setHeader(title, lead) {
