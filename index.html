@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>授業相談カード大全 Web版ビューア</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="#">
+      <span class="brand-main">授業相談カード大全</span>
+      <span class="brand-sub">Web版ビューア v0.1</span>
+    </a>
+    <nav class="history-actions" aria-label="履歴移動">
+      <button id="backButton" class="quiet-button" type="button">戻る</button>
+      <button id="forwardButton" class="quiet-button" type="button">進む</button>
+    </nav>
+    <nav class="header-actions" aria-label="画面操作">
+      <a href="#" class="nav-link">トップ</a>
+      <button id="guideButton" class="quiet-button" type="button">使い方</button>
+    </nav>
+  </header>
+
+  <main class="app-shell">
+    <section class="main-panel" aria-live="polite">
+      <div id="viewHeader" class="view-header"></div>
+      <div id="appView"></div>
+    </section>
+
+    <aside class="side-panel" aria-label="検索と気になるカード">
+      <section class="tool-section">
+        <h2>カード検索</h2>
+        <label class="search-box">
+          <span class="sr-only">検索語</span>
+          <input id="searchInput" type="search" placeholder="番号・名前・問いなどで検索">
+        </label>
+        <div id="tagSuggestions" class="tag-suggestions" aria-label="検索補助タグ"></div>
+        <div id="searchResults" class="search-results" aria-live="polite"></div>
+      </section>
+
+      <section class="tool-section">
+        <div class="section-title-row">
+          <h2>気になるカード</h2>
+          <button id="clearFavorites" class="text-button" type="button">全クリア</button>
+        </div>
+        <p class="small-note">この画面を閉じるまで、最大5枚まで保存します。</p>
+        <div id="favoriteTray" class="favorite-tray" aria-live="polite"></div>
+      </section>
+
+      <section class="tool-section">
+        <div class="section-title-row">
+          <h2>メモ</h2>
+          <button id="clearMemo" class="text-button" type="button">クリア</button>
+        </div>
+        <p class="small-note">必要な文をコピーして貼っておけます。個人情報は入力しないでください。</p>
+        <label class="memo-input-wrap">
+          <span class="sr-only">メモ</span>
+          <textarea id="memoInput" rows="8" placeholder="カードの問い・ヒントなど、あとで見たい箇所を貼り付け"></textarea>
+        </label>
+        <p id="memoStatus" class="memo-status" aria-live="polite"></p>
+      </section>
+    </aside>
+  </main>
+
+  <template id="imageCardTemplate">
+    <button class="image-cell" type="button">
+      <span class="image-wrap">
+        <img alt="">
+        <span class="image-fallback">準備中</span>
+      </span>
+      <span class="cell-caption"></span>
+    </button>
+  </template>
+
+  <div id="guideModal" class="modal-backdrop" hidden>
+    <section class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <div class="guide-header">
+        <h2 id="guideTitle">使い方ガイド</h2>
+        <button id="guideCloseButton" class="icon-button" type="button" aria-label="使い方ガイドを閉じる">×</button>
+      </div>
+      <div class="guide-body">
+        <section>
+          <h3>1. カードを探す</h3>
+          <p>トップ画面の8つの画像から、見たいカテゴリを選びます。カテゴリ画面では、周囲の8枚のカード画像をクリックすると詳細を開けます。</p>
+        </section>
+        <section>
+          <h3>2. 検索する</h3>
+          <p>検索欄に、気になる言葉を入れてください。カード本文にない言葉でも、検索補助タグから近いカードを探せます。</p>
+        </section>
+        <section>
+          <h3>3. タグから探す</h3>
+          <p>検索欄の下に、その画面に合ったタグが表示されます。タグをクリックすると、その言葉で検索できます。</p>
+        </section>
+        <section>
+          <h3>4. 気になるカードを残す</h3>
+          <p>詳細画面の「気になるカードに保存」を押すと、この画面を閉じるまで最大5枚まで一時保存できます。</p>
+        </section>
+        <section>
+          <h3>5. 今日見る一点メモ</h3>
+          <p>詳細画面の下に、TSVの値をそのまま組み合わせたメモが表示されます。授業を見るときの焦点づくりに使えます。</p>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <script src="assets/js/app_data.js"></script>
+  <script src="assets/js/card_tags.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

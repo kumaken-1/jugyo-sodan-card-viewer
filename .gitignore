@@ -1,0 +1,13 @@
+# 元素材・作業用ファイル
+/*.jpg
+/app_cards_full_values.tsv
+/app_config.json
+/layout_spec.md
+/project_brief.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# 一時ファイル
+/assets/tmp_lightweight_images/
