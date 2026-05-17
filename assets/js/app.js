@@ -217,7 +217,7 @@
       const isCenter = imageId === "00";
       const cell = createImageCell(card, {
         staticCell: isCenter,
-        caption: isCenter ? (card ? card.cardName : fileName) : TOP_CAPTIONS[imageId],
+        caption: isCenter ? "相談カテゴリー" : TOP_CAPTIONS[imageId],
         onClick: isCenter ? null : () => {
           const categoryId = String(Number(imageId) / 10);
           location.hash = `category=${categoryId}`;
