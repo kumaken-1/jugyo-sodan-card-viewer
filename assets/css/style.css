@@ -594,6 +594,11 @@ textarea {
   margin-top: 4px;
 }
 
+.result-question {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 .favorite-actions {
   display: flex;
   justify-content: flex-end;
