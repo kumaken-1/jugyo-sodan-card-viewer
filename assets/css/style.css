@@ -121,7 +121,8 @@ textarea {
 .text-button,
 .primary-button {
   border: 1px solid var(--line);
-  background: var(--panel);
+  background: #edf6cf;
+  border-color: #cddf8e;
   color: var(--text);
   border-radius: 6px;
   padding: 8px 12px;
@@ -133,13 +134,12 @@ textarea {
 .nav-link:hover,
 .text-button:hover,
 .primary-button:hover {
-  border-color: var(--accent);
+  background: #e3efb8;
+  border-color: #a9c85b;
 }
 
 .primary-button {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+  font-weight: 700;
 }
 
 .primary-button[disabled] {
@@ -149,15 +149,15 @@ textarea {
 
 .text-button {
   padding: 4px 8px;
-  color: var(--accent);
+  color: #4f6f15;
 }
 
 .icon-button {
   width: 36px;
   height: 36px;
-  border: 1px solid var(--line);
+  border: 1px solid #cddf8e;
   border-radius: 6px;
-  background: var(--panel);
+  background: #edf6cf;
   color: var(--text);
   cursor: pointer;
   font-size: 22px;
@@ -473,10 +473,10 @@ textarea {
 }
 
 .tag-button {
-  border: 1px solid #c8ddd8;
+  border: 1px solid #cddf8e;
   border-radius: 999px;
-  background: var(--accent-weak);
-  color: #24534e;
+  background: #edf6cf;
+  color: #4f6f15;
   cursor: pointer;
   font-size: 12px;
   line-height: 1.2;
@@ -485,8 +485,9 @@ textarea {
 
 .tag-button:hover,
 .tag-button:focus-visible {
-  border-color: var(--accent);
-  outline: 2px solid rgba(31, 107, 99, 0.15);
+  background: #e3efb8;
+  border-color: #a9c85b;
+  outline: 2px solid rgba(169, 200, 91, 0.22);
 }
 
 .search-results,
