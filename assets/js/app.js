@@ -534,7 +534,7 @@
       link.append(
         textSpan("result-number-category", `${card.cardNumber}　${card.categoryName}`),
         textSpan("result-title", card.cardName),
-        textSpan("result-question", card.question),
+        textSpan("result-question", `問い：${card.question}`),
         textSpan("result-issue", card.issue)
       );
       els.searchResults.appendChild(link);
