@@ -56,6 +56,91 @@
     "70": "総合的な学習・生活科で、子どもの問いや願いを育てたい",
     "80": "特別支援学級で、その子の「できた」を設計したい"
   };
+  const PROBLEM_GROUPS = [
+    {
+      id: "entry",
+      label: "導入・課題",
+      phrases: [
+        "導入で子どもが乗ってこない",
+        "めあてがうまく立てられない",
+        "課題が子どものものにならない",
+        "発問しても反応が薄い"
+      ]
+    },
+    {
+      id: "discussion",
+      label: "発言・話し合い",
+      phrases: [
+        "子どもの考えを拾えない",
+        "どの発言を取り上げればよいかわからない",
+        "ペアやグループがうまく動かない",
+        "話し合いが一部の子だけになる",
+        "全体共有が発表会になってしまう"
+      ]
+    },
+    {
+      id: "writing",
+      label: "書く・まとめる",
+      phrases: [
+        "板書がまとまらない",
+        "ノートに何を書かせればよいかわからない",
+        "活動が作業で終わってしまう",
+        "まとめが教師の説明になってしまう",
+        "書く量に差が出すぎる"
+      ]
+    },
+    {
+      id: "reflection",
+      label: "見取り・評価",
+      phrases: [
+        "振り返りが感想だけになる",
+        "評価をどこで見ればよいかわからない",
+        "授業後に何を振り返ればよいかわからない",
+        "次の授業にどうつなげればよいかわからない",
+        "研究授業で何を見てもらえばよいかわからない"
+      ]
+    },
+    {
+      id: "management",
+      label: "授業運営",
+      phrases: [
+        "時間配分がうまくいかない",
+        "授業が予定通り進まない",
+        "子どもが静かすぎる",
+        "子どもがざわざわして集中しない",
+        "指示が通らない",
+        "活動の切り替えがうまくいかない"
+      ]
+    },
+    {
+      id: "materials",
+      label: "教材・単元",
+      phrases: [
+        "教材研究で何を見ればよいかわからない",
+        "単元の流れが見えない",
+        "子どもの「できた」をどう見るかわからない"
+      ]
+    },
+    {
+      id: "ict",
+      label: "ICT・情報",
+      phrases: [
+        "ICTを使うと学びが浅くなる",
+        "調べ学習がコピーで終わる"
+      ]
+    },
+    {
+      id: "support",
+      label: "支援",
+      phrases: [
+        "つまずいている子への声かけがわからない",
+        "できる子を待たせてしまう",
+        "支援が個別対応だけで終わってしまう",
+        "特別な支援が必要な子への手立てに迷う",
+        "交流学級・特別支援学級の学びをつなげたい"
+      ]
+    }
+  ];
   const CATEGORY_LAYOUT_SUFFIXES = ["8", "1", "2", "7", "0", "3", "6", "5", "4"];
 
   const state = {
@@ -64,7 +149,8 @@
     byImage: new Map(),
     normalCards: [],
     tagsById: {},
-    problemPhrases: []
+    problemPhrases: [],
+    problemGroupId: PROBLEM_GROUPS[0].id
   };
 
   const els = {
@@ -137,6 +223,13 @@
     window.addEventListener("hashchange", render);
     els.searchInput.addEventListener("input", renderSearch);
     els.problemSuggestions.addEventListener("click", (event) => {
+      const groupButton = event.target.closest("button[data-problem-group]");
+      if (groupButton) {
+        state.problemGroupId = groupButton.dataset.problemGroup;
+        renderProblemSuggestions(getRoute());
+        return;
+      }
+
       const button = event.target.closest("button[data-problem]");
       if (!button) {
         return;
@@ -478,7 +571,25 @@
     label.textContent = getProblemSuggestionLabel(route);
     els.problemSuggestions.appendChild(label);
 
-    getSuggestedProblems(route).forEach((problem) => {
+    const groupList = document.createElement("div");
+    groupList.className = "problem-group-list";
+    PROBLEM_GROUPS.forEach((group) => {
+      const button = document.createElement("button");
+      button.className = group.id === state.problemGroupId ? "problem-group-button is-active" : "problem-group-button";
+      button.type = "button";
+      button.dataset.problemGroup = group.id;
+      button.textContent = group.label;
+      groupList.appendChild(button);
+    });
+    els.problemSuggestions.appendChild(groupList);
+
+    const selectedGroup = getSelectedProblemGroup();
+    const problemLabel = document.createElement("p");
+    problemLabel.className = "problem-suggestion-label problem-child-label";
+    problemLabel.textContent = `${selectedGroup.label}の困りごと`;
+    els.problemSuggestions.appendChild(problemLabel);
+
+    getProblemsForGroup(selectedGroup).forEach((problem) => {
       const button = document.createElement("button");
       button.className = "problem-button";
       button.type = "button";
@@ -490,39 +601,21 @@
 
   function getProblemSuggestionLabel(route) {
     if (route.name === "card") {
-      return "このカードにつながる困りごと";
+      return "困りごとを大きく選ぶ";
     }
     if (route.name === "category") {
-      return "このカテゴリで考えやすい困りごと";
+      return "困りごとを大きく選ぶ";
     }
-    return "よくある困りごと";
+    return "困りごとを大きく選ぶ";
   }
 
-  function getSuggestedProblems(route) {
-    if (route.name === "card") {
-      return state.problemPhrases
-        .filter((problem) => problem.cardIds.includes(route.value))
-        .slice(0, 6);
-    }
+  function getSelectedProblemGroup() {
+    return PROBLEM_GROUPS.find((group) => group.id === state.problemGroupId) || PROBLEM_GROUPS[0];
+  }
 
-    if (route.name === "category") {
-      const categoryCards = new Set(
-        state.normalCards
-          .filter((card) => card.categoryId === route.value)
-          .map((card) => card.id)
-      );
-      return state.problemPhrases
-        .map((problem) => ({
-          problem,
-          score: problem.cardIds.filter((id) => categoryCards.has(id)).length
-        }))
-        .filter((item) => item.score > 0)
-        .sort((a, b) => b.score - a.score || a.problem.phrase.localeCompare(b.problem.phrase, "ja"))
-        .map((item) => item.problem)
-        .slice(0, 8);
-    }
-
-    return state.problemPhrases.slice(0, 10);
+  function getProblemsForGroup(group) {
+    const phraseSet = new Set(group.phrases);
+    return state.problemPhrases.filter((problem) => phraseSet.has(problem.phrase));
   }
 
   function renderTagSuggestions(route) {

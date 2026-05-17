@@ -480,12 +480,44 @@ textarea {
   margin-top: 10px;
 }
 
+.problem-group-list {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+}
+
 .problem-suggestion-label,
 .tag-suggestion-label {
   flex-basis: 100%;
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.problem-child-label {
+  margin-top: 4px;
+}
+
+.problem-group-button {
+  border: 1px solid #a9c85b;
+  border-radius: 6px;
+  background: #edf6cf;
+  color: #3f5f10;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  padding: 7px 8px;
+  text-align: center;
+}
+
+.problem-group-button:hover,
+.problem-group-button:focus-visible,
+.problem-group-button.is-active {
+  background: #d9ec9d;
+  border-color: #7ea536;
+  outline: 2px solid rgba(126, 165, 54, 0.2);
 }
 
 .problem-button {
