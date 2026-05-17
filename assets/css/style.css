@@ -102,6 +102,20 @@ textarea {
   outline: 2px solid rgba(217, 111, 34, 0.22);
 }
 
+.nav-link.top-button {
+  background: #1f7a4f;
+  border-color: #17683f;
+  color: #fff;
+  font-weight: 700;
+}
+
+.nav-link.top-button:hover,
+.nav-link.top-button:focus-visible {
+  background: #17683f;
+  border-color: #115732;
+  outline: 2px solid rgba(31, 122, 79, 0.2);
+}
+
 .nav-link,
 .quiet-button,
 .text-button,

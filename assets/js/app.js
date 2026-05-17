@@ -198,8 +198,7 @@
   }
 
   function renderTop() {
-    const topCard = state.byId.get("00");
-    setHeader("トップ画面", topCard ? topCard.point : "カテゴリを選んでください。");
+    setHeader("トップ画面", "マンダラです。周囲の見たいカードをクリックしてください");
     const grid = createGrid();
 
     TOP_LAYOUT.forEach((imageId) => {
