@@ -28,11 +28,12 @@
 
     <aside class="side-panel" aria-label="検索と気になるカード">
       <section class="tool-section">
-        <h2>カード検索</h2>
+        <h2>検索・困りごとから探す</h2>
         <label class="search-box">
           <span class="sr-only">検索語</span>
-          <input id="searchInput" type="search" placeholder="番号・名前・問いなどで検索">
+          <input id="searchInput" type="search" placeholder="番号・名前・問い・困りごとで検索">
         </label>
+        <div id="problemSuggestions" class="problem-suggestions" aria-label="よくある困りごと"></div>
         <div id="tagSuggestions" class="tag-suggestions" aria-label="検索補助タグ"></div>
         <div id="searchResults" class="search-results" aria-live="polite"></div>
       </section>
@@ -104,6 +105,7 @@
 
   <script src="assets/js/app_data.js"></script>
   <script src="assets/js/card_tags.js"></script>
+  <script src="assets/js/problem_phrases.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

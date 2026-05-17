@@ -63,13 +63,15 @@
     byId: new Map(),
     byImage: new Map(),
     normalCards: [],
-    tagsById: {}
+    tagsById: {},
+    problemPhrases: []
   };
 
   const els = {
     viewHeader: document.getElementById("viewHeader"),
     appView: document.getElementById("appView"),
     searchInput: document.getElementById("searchInput"),
+    problemSuggestions: document.getElementById("problemSuggestions"),
     tagSuggestions: document.getElementById("tagSuggestions"),
     searchResults: document.getElementById("searchResults"),
     favoriteTray: document.getElementById("favoriteTray"),
@@ -92,6 +94,7 @@
       const tsv = await loadTsv();
       setCards(parseTsv(tsv));
       state.tagsById = window.APP_CARD_TAGS || {};
+      state.problemPhrases = window.APP_PROBLEM_PHRASES || [];
       bindEvents();
       render();
     } catch (error) {
@@ -133,6 +136,15 @@
   function bindEvents() {
     window.addEventListener("hashchange", render);
     els.searchInput.addEventListener("input", renderSearch);
+    els.problemSuggestions.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-problem]");
+      if (!button) {
+        return;
+      }
+      els.searchInput.value = button.dataset.problem;
+      renderSearch();
+      els.searchInput.focus();
+    });
     els.tagSuggestions.addEventListener("click", (event) => {
       const button = event.target.closest("button[data-tag]");
       if (!button) {
@@ -190,6 +202,7 @@
     } else {
       renderTop();
     }
+    renderProblemSuggestions(route);
     renderTagSuggestions(route);
     renderSearch();
     renderFavorites();
@@ -433,14 +446,16 @@
 
     const results = state.normalCards.filter((card) => {
       return getSearchText(card).includes(query);
-    }).slice(0, 20);
+    });
+    const problemMatches = getProblemMatchedCards(query);
+    const mergedResults = mergeCards(results, problemMatches).slice(0, 20);
 
-    if (results.length === 0) {
+    if (mergedResults.length === 0) {
       els.searchResults.appendChild(emptyState("該当するカードはありません。"));
       return;
     }
 
-    results.forEach((card) => {
+    mergedResults.forEach((card) => {
       const link = document.createElement("a");
       link.className = "result-card";
       link.href = `#card=${encodeURIComponent(card.id)}`;
@@ -448,10 +463,66 @@
         textSpan("result-title", `${card.cardNumber} ${card.cardName}`),
         textSpan("result-meta", card.categoryName),
         textSpan("result-question", card.question),
+        textSpan("result-problem", formatProblemMatches(card, query)),
         textSpan("result-tags", formatTags(card))
       );
       els.searchResults.appendChild(link);
     });
+  }
+
+  function renderProblemSuggestions(route) {
+    els.problemSuggestions.replaceChildren();
+
+    const label = document.createElement("p");
+    label.className = "problem-suggestion-label";
+    label.textContent = getProblemSuggestionLabel(route);
+    els.problemSuggestions.appendChild(label);
+
+    getSuggestedProblems(route).forEach((problem) => {
+      const button = document.createElement("button");
+      button.className = "problem-button";
+      button.type = "button";
+      button.dataset.problem = problem.phrase;
+      button.textContent = problem.phrase;
+      els.problemSuggestions.appendChild(button);
+    });
+  }
+
+  function getProblemSuggestionLabel(route) {
+    if (route.name === "card") {
+      return "このカードにつながる困りごと";
+    }
+    if (route.name === "category") {
+      return "このカテゴリで考えやすい困りごと";
+    }
+    return "よくある困りごと";
+  }
+
+  function getSuggestedProblems(route) {
+    if (route.name === "card") {
+      return state.problemPhrases
+        .filter((problem) => problem.cardIds.includes(route.value))
+        .slice(0, 6);
+    }
+
+    if (route.name === "category") {
+      const categoryCards = new Set(
+        state.normalCards
+          .filter((card) => card.categoryId === route.value)
+          .map((card) => card.id)
+      );
+      return state.problemPhrases
+        .map((problem) => ({
+          problem,
+          score: problem.cardIds.filter((id) => categoryCards.has(id)).length
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.problem.phrase.localeCompare(b.problem.phrase, "ja"))
+        .map((item) => item.problem)
+        .slice(0, 8);
+    }
+
+    return state.problemPhrases.slice(0, 10);
   }
 
   function renderTagSuggestions(route) {
@@ -520,6 +591,43 @@
     const tsvText = SEARCH_FIELDS.map((field) => card[field] || "").join(" ");
     const tagText = getTagsForCard(card).join(" ");
     return `${tsvText} ${tagText}`.toLowerCase();
+  }
+
+  function getProblemMatchedCards(query) {
+    const ids = new Set();
+    state.problemPhrases.forEach((problem) => {
+      if (getProblemSearchText(problem).includes(query)) {
+        problem.cardIds.forEach((id) => ids.add(id));
+      }
+    });
+    return [...ids]
+      .map((id) => state.byId.get(id))
+      .filter((card) => card && card.level === "card");
+  }
+
+  function getProblemSearchText(problem) {
+    return [problem.phrase, ...(problem.aliases || [])].join(" ").toLowerCase();
+  }
+
+  function mergeCards(primaryCards, secondaryCards) {
+    const seen = new Set();
+    return [...primaryCards, ...secondaryCards].filter((card) => {
+      if (seen.has(card.id)) {
+        return false;
+      }
+      seen.add(card.id);
+      return true;
+    });
+  }
+
+  function formatProblemMatches(card, query) {
+    if (!query) {
+      return "";
+    }
+    const matched = state.problemPhrases
+      .filter((problem) => problem.cardIds.includes(card.id) && getProblemSearchText(problem).includes(query))
+      .map((problem) => problem.phrase);
+    return matched.length ? `困りごと：${matched.join("、")}` : "";
   }
 
   function formatTags(card) {

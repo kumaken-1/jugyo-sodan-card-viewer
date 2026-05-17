@@ -473,11 +473,37 @@ textarea {
   margin-top: 10px;
 }
 
+.problem-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.problem-suggestion-label,
 .tag-suggestion-label {
   flex-basis: 100%;
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.problem-button {
+  border: 1px solid #b7d7ce;
+  border-radius: 999px;
+  background: #e8f5f1;
+  color: #24534e;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 6px 9px;
+}
+
+.problem-button:hover,
+.problem-button:focus-visible {
+  background: #d9eee8;
+  border-color: #82b9aa;
+  outline: 2px solid rgba(130, 185, 170, 0.24);
 }
 
 .tag-button {
@@ -532,6 +558,7 @@ textarea {
 .result-meta,
 .favorite-meta,
 .result-question,
+.result-problem,
 .result-tags,
 .favorite-question,
 .small-note {
@@ -543,6 +570,12 @@ textarea {
 .result-tags {
   margin-top: 6px;
   color: #4b766f;
+}
+
+.result-problem {
+  margin-top: 6px;
+  color: #27665e;
+  font-weight: 700;
 }
 
 .favorite-actions {
