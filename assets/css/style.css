@@ -569,11 +569,10 @@ textarea {
   font-weight: 700;
 }
 
-.result-meta,
+.result-number-category,
 .favorite-meta,
 .result-question,
-.result-problem,
-.result-tags,
+.result-issue,
 .favorite-question,
 .small-note {
   display: block;
@@ -581,15 +580,18 @@ textarea {
   font-size: 12px;
 }
 
-.result-tags {
-  margin-top: 6px;
-  color: #4b766f;
-}
-
-.result-problem {
-  margin-top: 6px;
+.result-number-category {
   color: #27665e;
   font-weight: 700;
+}
+
+.result-title {
+  margin-top: 3px;
+}
+
+.result-question,
+.result-issue {
+  margin-top: 4px;
 }
 
 .favorite-actions {

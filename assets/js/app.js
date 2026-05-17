@@ -532,11 +532,10 @@
       link.className = "result-card";
       link.href = `#card=${encodeURIComponent(card.id)}`;
       link.append(
-        textSpan("result-title", `${card.cardNumber} ${card.cardName}`),
-        textSpan("result-meta", card.categoryName),
+        textSpan("result-number-category", `${card.cardNumber}　${card.categoryName}`),
+        textSpan("result-title", card.cardName),
         textSpan("result-question", card.question),
-        textSpan("result-problem", formatProblemMatches(card, query)),
-        textSpan("result-tags", formatTags(card))
+        textSpan("result-issue", card.issue)
       );
       els.searchResults.appendChild(link);
     });
