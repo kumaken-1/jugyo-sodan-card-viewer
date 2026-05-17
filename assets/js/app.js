@@ -198,7 +198,7 @@
   }
 
   function renderTop() {
-    setHeader("トップ画面", "マンダラです。周囲の見たいカードをクリックしてください");
+    setHeader("トップ画面", "マンダラシートです。周囲にある８枚のカードをクリックしてください");
     const grid = createGrid();
 
     TOP_LAYOUT.forEach((imageId) => {
