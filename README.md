@@ -9,7 +9,7 @@
 GitHub Pagesで公開後、次の形式のURLから利用できます。
 
 ```text
-https://ユーザー名.github.io/リポジトリ名/
+https://kumaken-1.github.io/jugyo-sodan-card-viewer/
 ```
 
 ## 主な機能
