@@ -423,7 +423,7 @@
     favButton.addEventListener("click", () => addFavorite(card.id));
     actions.append(backLink, favButton);
 
-    detail.append(info, detailTags(card), actions, memoBox(card));
+    detail.append(info, detailTags(card), actions);
     layout.append(imageBox, detail);
     replaceView(layout);
     updateFavoriteButton();
@@ -505,27 +505,6 @@
 
     section.append(title, list);
     return section;
-  }
-
-  function memoBox(card) {
-    const box = document.createElement("section");
-    box.className = "memo-box";
-    const title = document.createElement("h3");
-    title.textContent = "今日見る一点メモ";
-    box.appendChild(title);
-
-    [
-      `カード：\n${card.cardName}`,
-      `問い：\n${card.question}`,
-      `見るヒント：\n${card.hints}`,
-      `今日の授業では、\nWhy：${card.why}\nWhat：${card.what}\nHow：${card.how}\nを手がかりに見る。`
-    ].forEach((text) => {
-      const p = document.createElement("p");
-      p.textContent = text;
-      box.appendChild(p);
-    });
-
-    return box;
   }
 
   function renderSearch() {

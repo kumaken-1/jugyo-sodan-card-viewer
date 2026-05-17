@@ -389,24 +389,6 @@ textarea {
   gap: 6px;
 }
 
-.memo-box {
-  margin-top: 18px;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f7fbfa;
-}
-
-.memo-box h3 {
-  margin: 0 0 10px;
-  font-size: 18px;
-}
-
-.memo-box p {
-  margin: 8px 0;
-  white-space: pre-wrap;
-}
-
 .detail-actions {
   display: flex;
   flex-wrap: wrap;

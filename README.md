@@ -20,7 +20,6 @@ https://kumaken-1.github.io/jugyo-sodan-card-viewer/
 - カード検索
 - 検索補助タグ
 - 気になるカードの一時保存
-- 今日見る一点メモ
 - メモ欄
 - 使い方ガイド
 - 画像がない場合の「準備中」表示
