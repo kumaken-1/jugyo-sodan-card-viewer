@@ -72,10 +72,25 @@ textarea {
 .history-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.quiet-button.history-button {
+  background: #d96f22;
+  border-color: #c85f18;
+  color: #fff;
+  font-weight: 700;
+}
+
+.quiet-button.history-button:hover,
+.quiet-button.history-button:focus-visible {
+  background: #c85f18;
+  border-color: #a94e12;
+  outline: 2px solid rgba(217, 111, 34, 0.22);
 }
 
 .nav-link,
@@ -622,6 +637,15 @@ textarea {
   .history-actions {
     position: static;
     transform: none;
+    width: 100%;
+  }
+
+  .history-actions .quiet-button,
+  .history-actions .nav-link {
+    flex: 1 1 0;
+    padding-left: 6px;
+    padding-right: 6px;
+    text-align: center;
   }
 
   .app-shell {
