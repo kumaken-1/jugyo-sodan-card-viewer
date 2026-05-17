@@ -473,10 +473,10 @@ textarea {
 }
 
 .tag-button {
-  border: 1px solid #cddf8e;
+  border: 1px solid #e6da63;
   border-radius: 999px;
-  background: #edf6cf;
-  color: #4f6f15;
+  background: #fff27a;
+  color: #4f4a00;
   cursor: pointer;
   font-size: 12px;
   line-height: 1.2;
@@ -485,9 +485,9 @@ textarea {
 
 .tag-button:hover,
 .tag-button:focus-visible {
-  background: #e3efb8;
-  border-color: #a9c85b;
-  outline: 2px solid rgba(169, 200, 91, 0.22);
+  background: #f6e85e;
+  border-color: #d6c747;
+  outline: 2px solid rgba(246, 232, 94, 0.35);
 }
 
 .search-results,
